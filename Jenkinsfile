@@ -28,19 +28,22 @@ pipeline {
                 '''
             }
         }
-
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    sh """
-                    sonar-scanner \
-                      -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                      -Dsonar.sources=. \
-                      -Dsonar.host.url=http://localhost:9000
-                    """
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+                    withSonarQubeEnv('sonarqube') {
+                        sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=simple-app \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://localhost:9000
+                        """
+                    }
                 }
             }
         }
+
 
         stage('Quality Gate') {
             steps {
